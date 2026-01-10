@@ -1,0 +1,37 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# Logs
+*.log
+logs/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# MacOS system files
+.DS_Store
+
+# Docker artifacts
+*.pid
+
+# Local overrides
+*.local
