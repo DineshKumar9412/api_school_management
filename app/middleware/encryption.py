@@ -2,10 +2,10 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
 from starlette.requests import Request
-from security.helper import DECRYPTED_PATHS
+from app.security.helper import DECRYPTED_PATHS
 import base64
 import json
-from security.crypto import encrypt_json
+from app.security.crypto import encrypt_json
 import os
 
 
