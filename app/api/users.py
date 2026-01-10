@@ -3,11 +3,11 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 from fastapi import Query
-from app.database.session import get_db
-from app.models.user import User
-from app.schemas.user import UserRead, UserCreate
-from app.response.result import Result
-from app.database.redis_cache import RedisCache
+from database.session import get_db
+from models.user import User
+from schemas.user import UserRead, UserCreate
+from response.result import Result
+from database.redis_cache import RedisCache
 
 router = APIRouter()
 
