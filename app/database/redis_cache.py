@@ -4,7 +4,6 @@ import json
 import redis.asyncio as redis
 from typing import Optional, Any
 
-
 class RedisCache:
     def __init__(
         self,

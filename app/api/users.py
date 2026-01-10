@@ -40,7 +40,7 @@ async def post_api_check(item: UserCreate, db: AsyncSession = Depends(get_db)):
 
 # Database Get Check
 @router.get("/database_row_get/", response_model=dict)
-async def get_value_user(name: str = Query(...),email: str = Query(...),db: AsyncSession = Depends(get_db)):
+async def database_value_user(name: str = Query(...),email: str = Query(...),db: AsyncSession = Depends(get_db)):
     stmt = select(User).where(and_(User.name == name, User.email == email))
     result = await db.execute(stmt)
     user = result.scalar_one_or_none()
@@ -49,7 +49,7 @@ async def get_value_user(name: str = Query(...),email: str = Query(...),db: Asyn
     return Result(200,"SUCCESS",{"id": user.id, "name": user.name, "email": user.email}).http_response()
 
 @router.get("/cache_row_get/", response_model=dict)
-async def get_value_user(name: str = Query(...),email: str = Query(...),db: AsyncSession = Depends(get_db)):
+async def cache_value_user(name: str = Query(...),email: str = Query(...),db: AsyncSession = Depends(get_db)):
 
     cache_key = f"user:{name}_{email}"
 
@@ -68,3 +68,13 @@ async def get_value_user(name: str = Query(...),email: str = Query(...),db: Asyn
 
     await cache.set(cache_key, user_data, expire=300)
     return Result(200, "SUCCESS", user_data).http_response()
+
+@router.post("/encryption_check/")
+async def post_users_value(item: UserCreate, db: AsyncSession = Depends(get_db)):
+    return Result(200, "success", item.model_dump()
+                  ).http_response()
+
+@router.get("/decryption_check/")
+def get_value(name: str = Query(...), email: str = Query(...)):
+    return Result(200, "success", {"name": name, "email": email}
+                  ).http_response()

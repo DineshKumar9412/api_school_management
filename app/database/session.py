@@ -2,12 +2,13 @@
 import os
 from typing import AsyncGenerator
 from urllib.parse import quote_plus
-
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
+from dotenv import load_dotenv
+load_dotenv()
 
 DB_USER = quote_plus(os.getenv("DB_USER", ""))
 DB_PASSWORD = quote_plus(os.getenv("DB_PASSWORD", ""))

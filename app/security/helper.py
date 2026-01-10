@@ -1,9 +1,8 @@
 # security/helper.py
 ENCRYPTED_PATHS = {
-    "/api/users/",
-    "/api/users/new/"
+    "/api/users/encryption_check/"
 }
 
 DECRYPTED_PATHS = {
-    "/api/users/get_value/"
+    "/api/users/decryption_check/"
 }
