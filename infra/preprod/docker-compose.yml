@@ -1,79 +1,75 @@
-version: "3.8"
-
 services:
-
-  app:
-    container_name: school-app-preprod
-    build:
-      context: ../..
-      dockerfile: docker/Dockerfile
+  # Loki for logs
+  loki:
+    image: grafana/loki:3.6.0
+    container_name: loki_preprod
+    user: "0:0"
     ports:
-      - "8000:8000"
+      - "3100:3100"
     volumes:
-      - ../../app:/app
+      - ./loki-config.yaml:/etc/loki/local-config.yaml
+      - ./loki-data-preprod:/loki
+      - ./loki-wal-preprod:/wal
+    command: -config.file=/etc/loki/local-config.yaml
+
+  # Promtail to ship system logs
+  promtail:
+    image: grafana/promtail:3.6.0
+    container_name: promtail_preprod
+    user: "0:0"
+    volumes:
+      - /var/log:/var/log
+      - ./promtail-config.yaml:/etc/promtail/config.yaml
+    command: -config.file=/etc/promtail/config.yaml
     depends_on:
       - loki
-    restart: unless-stopped
 
+  # Prometheus for metrics
   prometheus:
-    image: prom/prometheus:v2.49.1
-    container_name: prometheus-preprod
+    image: prom/prometheus:latest
+    container_name: prometheus_preprod
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-preprod-data:/prometheus
+      - ./prometheus-data-preprod:/prometheus
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--storage.tsdb.retention.time=14d"
-    restart: unless-stopped
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=7d'
 
+  # Node exporter for system metrics
   node_exporter:
-    image: prom/node-exporter:v1.8.1
-    container_name: node-exporter-preprod
+    image: prom/node-exporter:latest
+    container_name: node_exporter_preprod
     ports:
       - "9100:9100"
-    restart: unless-stopped
 
-  loki:
-    image: grafana/loki:3.0.0
-    container_name: loki-preprod
-    ports:
-      - "3100:3100"
-    volumes:
-      - loki-preprod-data:/loki
-      - ./loki.yaml:/etc/loki/config.yaml
-    command: -config.file=/etc/loki/config.yaml
-    restart: unless-stopped
-
-  promtail:
-    image: grafana/promtail:3.0.0
-    container_name: promtail-preprod
-    volumes:
-      - /var/log:/var/log
-      - ./promtail.yaml:/etc/promtail/config.yaml
-    command: -config.file=/etc/promtail/config.yaml
-    depends_on:
-      - loki
-    restart: unless-stopped
-
+  # Grafana dashboards
   grafana:
-    image: grafana/grafana:10.2.3
-    container_name: grafana-preprod
+    image: grafana/grafana:10.0.0
+    container_name: grafana_preprod
     ports:
       - "3000:3000"
     volumes:
-      - grafana-preprod-data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana-data-preprod:/var/lib/grafana
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
     depends_on:
-      - prometheus
       - loki
-    restart: unless-stopped
+      - prometheus
+
+  # FastAPI app
+  app:
+    container_name: school_app_preprod
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./school_app:/app
+    env_file:
+      - .env
+    depends_on:
+      - loki
 
 volumes:
-  prometheus-preprod-data:
-  loki-preprod-data:
-  grafana-preprod-data:
+  grafana-data-preprod:
