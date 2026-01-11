@@ -12,7 +12,3 @@ aiomysql
 cryptography
 pydantic[email]
 prometheus-client
-alembic
-pytest
-httpx
-pytest-asyncio
